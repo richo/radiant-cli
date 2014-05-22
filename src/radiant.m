@@ -4,15 +4,25 @@
 #include "Radiant.h"
 
 enum Action {
-    next,
-    prev,
-    playpause,
-    thumbsup,
-    thumbsdown,
-    shuffle,
-    repeat,
+    next = 'n',
+    prev = 'p',
+    playpause = '=',
+    thumbsup = '+',
+    thumbsdown = '-',
+    shuffle = 's',
+    repeat = 'r',
     NONE
 };
+
+int perform_action(id Radiant, enum Action);
+
+int handle_stdin(id Radiant) {
+    char i;
+    while (read(1, &i, 1)) {
+        perform_action(Radiant, (enum Action)i);
+    }
+    return 0;
+}
 
 int main(int argc, char** argv) {
     id Radiant = [SBApplication applicationWithBundleIdentifier:@"com.sajidanwar.Radiant-Player"];
@@ -20,6 +30,10 @@ int main(int argc, char** argv) {
     if (argc == 1) {
         printf("Usage: %s <next|prev|playpause|thumbsup|thumbsdown|shuffle|repeat>\n", argv[0]);
         exit(1);
+    }
+
+    if (strcmp(argv[1], "--stdin") == 0) {
+        return handle_stdin(Radiant);
     }
 
 #define ACTION(name) do { \
@@ -35,6 +49,12 @@ int main(int argc, char** argv) {
     ACTION(shuffle);
     ACTION(repeat);
 
+#undef ACTION
+
+    return perform_action(Radiant, action);
+}
+
+int perform_action(id Radiant, enum Action action) {
     switch (action) {
         case next:
             [Radiant nextTrack]; break;
@@ -52,7 +72,7 @@ int main(int argc, char** argv) {
             [Radiant toggleRepeatmode]; break;
         default:
             printf("Unknown action\n");
-            exit(1);
+            return 1;
     }
     return 0;
 }
