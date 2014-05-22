@@ -24,16 +24,27 @@ int handle_stdin(id Radiant) {
     return 0;
 }
 
+static char* app_name;
+void usage(int status) {
+    dprintf(status + 1, "Usage: %s --stdin | <ACTION>\n", app_name);
+    dprintf(status + 1, "ACTIONS: next, prev, playpause, thumbsup, thumbsdown, shuffle, repeat\n");
+    exit(status);
+}
+
 int main(int argc, char** argv) {
+    app_name = argv[0];
     id Radiant = [SBApplication applicationWithBundleIdentifier:@"com.sajidanwar.Radiant-Player"];
     enum Action action = NONE;
     if (argc == 1) {
-        printf("Usage: %s <next|prev|playpause|thumbsup|thumbsdown|shuffle|repeat>\n", argv[0]);
-        exit(1);
+        usage(1);
     }
 
     if (strcmp(argv[1], "--stdin") == 0) {
         return handle_stdin(Radiant);
+    }
+
+    if (strcmp(argv[1], "--help") == 0) {
+        usage(0);
     }
 
 #define ACTION(name) do { \
@@ -51,7 +62,11 @@ int main(int argc, char** argv) {
 
 #undef ACTION
 
-    return perform_action(Radiant, action);
+    if (perform_action(Radiant, action) > 0) {
+        usage(1);
+    }
+
+    return 0;
 }
 
 int perform_action(id Radiant, enum Action action) {
@@ -71,7 +86,6 @@ int perform_action(id Radiant, enum Action action) {
         case repeat:
             [Radiant toggleRepeatmode]; break;
         default:
-            printf("Unknown action\n");
             return 1;
     }
     return 0;
