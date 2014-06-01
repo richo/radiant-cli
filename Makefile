@@ -8,6 +8,6 @@ src/radiant.o: src/radiant.m
 	clang -c -o $@ $(CFLAGS) $<
 
 clean:
-	rm radiant
+	rm radiant src/radiant.o
 
 .PHONY: clean
