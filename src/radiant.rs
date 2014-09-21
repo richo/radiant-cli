@@ -69,7 +69,7 @@ fn handle_arg(arg: &String) {
 
 fn main() {
     match os::args().len() {
-        2 => handle_arg(os::args().get(1)),
+        2 => handle_arg(&os::args()[1]),
         _ => usage(),
     }
 }
