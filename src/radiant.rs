@@ -17,7 +17,7 @@ enum Action {
 
 #[link(name = "ScriptingBridge", kind = "framework")]
 #[link(name = "Cocoa", kind = "framework")]
-#[link(name = "src/radiant.o", kind = "static")]
+#[link(name = "radiant", kind = "static")]
 extern "C" {
     fn init_radiant() -> libc::c_int;
     fn perform_action(action: Action) -> libc::c_int;
